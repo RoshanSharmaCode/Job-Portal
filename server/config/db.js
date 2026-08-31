@@ -1,8 +1,12 @@
-import mongoose, { connect } from "mongoose";
+import mongoose from "mongoose";
+import dns from "dns";
 
-// Function to connect to MongoDB database
+dns.setServers(["8.8.8.8"]);
+
 const conectDB = async () => {
-  mongoose.connection.on("connected", () => console.log("Database connected"));
+  mongoose.connection.on("connected", () => {
+    console.log("Database connected");
+  });
 
   await mongoose.connect(`${process.env.MONGODB_URI}/job-portal`);
 };
