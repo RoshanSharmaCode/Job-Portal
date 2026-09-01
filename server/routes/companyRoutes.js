@@ -1,5 +1,7 @@
 import express from "express";
 import upload from "../config/multer.js";
+import { protectCompnay } from  "../middlewares/authMIddleware.js";
+
 import {
   registerCompany,
   loginCompany,
@@ -20,7 +22,7 @@ router.post("/register", upload.single("image"), registerCompany);
 router.post("/login", loginCompany);
 
 // Get company data
-router.get("/Company", getCompanyData);
+router.get("/Company", protectCompnay, getCompanyData);
 
 // Post a new job
 router.post("/post-jobs", postJob);

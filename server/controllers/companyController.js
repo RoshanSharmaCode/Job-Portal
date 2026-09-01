@@ -54,8 +54,6 @@ export const registerCompany = async (req, res) => {
       token: generateToken(company._id),
     });
   } catch (error) {
-    console.error("REGISTER COMPANY ERROR:", error);
-
     return res.status(500).json({
       success: false,
       message: error.message,
@@ -64,7 +62,45 @@ export const registerCompany = async (req, res) => {
 };
 
 // Company login
-export const loginCompany = async (req, res) => {};
+export const loginCompany = async (req, res) => {
+  const {email, password} = req.body;
+  try {
+    const company = await Company.findOne({ email });
+
+    if (!company) {
+      return res.status(404).json({
+        success: false,
+        message: "Company not found",
+      });
+    }
+
+    const isMatch = await bcrypt.compare(password, company.password);
+
+    if (!isMatch) {
+      return res.status(401).json({
+        success: false,
+        message: "Invalid credentials",
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      company: {
+        _id: company._id,
+        name: company.name,
+        email: company.email,
+        image: company.image,
+      },
+      token: generateToken(company._id),
+    });
+    
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
 
 // Get company data
 
