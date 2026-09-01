@@ -2,6 +2,7 @@ import Company from "../models/Compnay.js";
 import bcrypt from "bcrypt";
 import { v2 as cloudinary } from "cloudinary";
 import generateToken from "../utils/generateToken.js";
+import Job from "../models/Job.js";
 
 export const registerCompany = async (req, res) => {
   const { name, email, password } = req.body;
@@ -63,7 +64,7 @@ export const registerCompany = async (req, res) => {
 
 // Company login
 export const loginCompany = async (req, res) => {
-  const {email, password} = req.body;
+  const { email, password } = req.body;
   try {
     const company = await Company.findOne({ email });
 
@@ -93,7 +94,6 @@ export const loginCompany = async (req, res) => {
       },
       token: generateToken(company._id),
     });
-    
   } catch (error) {
     return res.status(500).json({
       success: false,
@@ -103,11 +103,40 @@ export const loginCompany = async (req, res) => {
 };
 
 // Get company data
-
 export const getCompanyData = async (req, res) => {};
 
 // Post a new job
-export const postJob = async (req, res) => {};
+export const postJob = async (req, res) => {
+  const { title, description, location, salary, level, category } = req.body;
+
+  const companyId = req.company._id;
+
+  try {
+    const newJob = new Job({
+      title,
+      description,
+      location,
+      salary,
+      companyId,
+      date: Date.now(),
+      level,
+      category,
+    });
+
+    await newJob.save();
+
+    return res.status(201).json({
+      success: true,
+      job: newJob,
+    });
+
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
 
 // Get Company job applications
 export const getCompanyJobApplications = async (req, res) => {};

@@ -1,6 +1,6 @@
 import express from "express";
 import upload from "../config/multer.js";
-import { protectCompnay } from  "../middlewares/authMIddleware.js";
+import { protectCompnay } from "../middlewares/authMIddleware.js";
 
 import {
   registerCompany,
@@ -25,18 +25,18 @@ router.post("/login", loginCompany);
 router.get("/Company", protectCompnay, getCompanyData);
 
 // Post a new job
-router.post("/post-jobs", postJob);
+router.post("/post-job", protectCompnay, postJob);
 
 // Get company's job applications
-router.get("/applications", getCompanyJobApplications);
+router.get("/applications", protectCompnay, getCompanyJobApplications);
 
 // Get company's posted jobs
-router.get("/list-jobs", getCompanyPostedJobs);
+router.get("/list-jobs", protectCompnay, getCompanyPostedJobs);
 
 // Change job application status
-router.post("/change-status", changeJobApplicationStatus);
+router.post("/change-status", protectCompnay, changeJobApplicationStatus);
 
 // Change job visibility
-router.post("/change-visibility", changeVisibility);
+router.post("/change-visibility", protectCompnay, changeVisibility);
 
 export default router;
