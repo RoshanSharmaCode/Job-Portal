@@ -103,7 +103,21 @@ export const loginCompany = async (req, res) => {
 };
 
 // Get company data
-export const getCompanyData = async (req, res) => {};
+export const getCompanyData = async (req, res) => {
+  try {
+    const company = req.company;
+
+    return res.status(200).json({
+      success: true,
+      company,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
 
 // Post a new job
 export const postJob = async (req, res) => {
@@ -129,7 +143,6 @@ export const postJob = async (req, res) => {
       success: true,
       job: newJob,
     });
-
   } catch (error) {
     return res.status(500).json({
       success: false,
@@ -142,10 +155,51 @@ export const postJob = async (req, res) => {
 export const getCompanyJobApplications = async (req, res) => {};
 
 // Get company Posted Jobs
-export const getCompanyPostedJobs = async (req, res) => {};
+export const getCompanyPostedJobs = async (req, res) => {
+  try {
+    const companyId = req.company._id;
+    const jobs = await Job.find({ companyId });
+
+    // (ToDo) Adding No. of applications info in data
+
+    return res.status(200).json({
+      success: true,
+      jobsData: jobs,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
 
 // Change job application status
 export const changeJobApplicationStatus = async (req, res) => {};
 
 // Change job visibility
-export const changeVisibility = async (req, res) => {};
+export const changeVisibility = async (req, res) => {
+  try {
+    const { id } = req.body;
+    const companyId = req.company._id;
+
+    const job = await Job.findById(id);
+
+    if (companyId.toString() === job.companyId.toString()) {
+      job.visible = !job.visible;
+    }
+
+    await job.save();
+
+    return res.status(200).json({
+      success: true,
+      message: "Job visibility changed successfully",
+      job,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
