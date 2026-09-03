@@ -11,7 +11,7 @@ const ManageJob = () => {
 
   const { backendUrl, companyToken } = useContext(AppContext);
 
-  const [jobs, setJobs] = useState(false);
+  const [jobs, setJobs] = useState([]);
 
   // function to fetch company job applications data
   const fetchCompanyJobs = async () => {
@@ -22,7 +22,27 @@ const ManageJob = () => {
 
       if (data.success) {
         setJobs(data.jobsData.reverse());
-        console.log(data.jobsData)
+        console.log(data.jobsData);
+      } else {
+        toast.error(data.message);
+      }
+    } catch (error) {
+      toast.error(error.message);
+    }
+  };
+
+  // Function to change job visiblity
+  const changeJobVisiblity = async (id) => {
+    try {
+      const { data } = await axios.post(
+        backendUrl + "/api/company/change-visiblity",
+        { id },
+        { headers: { token: companyToken } },
+      );
+
+      if (data.success) {
+        toast.success(data.message);
+        fetchCompanyJobs();
       } else {
         toast.error(data.message);
       }
@@ -53,7 +73,7 @@ const ManageJob = () => {
           </thead>
 
           <tbody>
-            {manageJobsData.map((job, index) => (
+            {jobs.map((job, index) => (
               <tr
                 className="text-gray-700 border-b border-gray-200 last:border-b-0"
                 key={index}
@@ -67,8 +87,10 @@ const ManageJob = () => {
                 <td className="py-3 px-4 text-center">{job.applicants}</td>
                 <td className="py-3 px-4">
                   <input
+                    onChange={() => changeJobVisiblity(job._id)}
                     className="ml-4 w-4 h-4 accent-blue-500 cursor-pointer"
                     type="checkbox"
+                    checked={job.visible}
                   />
                 </td>
               </tr>
