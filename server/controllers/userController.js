@@ -2,12 +2,13 @@ import User from "../models/User.js";
 import JobApplication from "../models/JobApplication.js";
 import Job from "../models/Job.js";
 import { v2 as cloudinary } from "cloudinary";
+import { clerkMiddleware } from "@clerk/express";
 
 // Get user data
 export const getUserData = async (req, res) => {
-  const userId = req.auth.userId;
-
   try {
+    const { userId } = req.auth();
+
     const user = await User.findById(userId);
 
     if (!user) {
@@ -22,6 +23,8 @@ export const getUserData = async (req, res) => {
       user,
     });
   } catch (error) {
+    console.log("GET USER DATA ERROR:", error);
+
     return res.status(500).json({
       success: false,
       message: error.message,
