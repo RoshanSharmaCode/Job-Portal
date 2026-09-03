@@ -161,6 +161,7 @@ export const getCompanyPostedJobs = async (req, res) => {
     const jobs = await Job.find({ companyId });
 
     // (ToDo) Adding No. of applications info in data
+    
 
     return res.status(200).json({
       success: true,

@@ -1,9 +1,41 @@
 import { manageJobsData } from "../assets/assets";
 import moment from "moment";
+import { useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { AppContext } from "../context/AppContext";
+import axios from "axios";
+import { toast } from "react-toastify";
 
 const ManageJob = () => {
   const navigate = useNavigate();
+
+  const { backendUrl, companyToken } = useContext(AppContext);
+
+  const [jobs, setJobs] = useState(false);
+
+  // function to fetch company job applications data
+  const fetchCompanyJobs = async () => {
+    try {
+      const { data } = await axios.get(backendUrl + "/api/company/list-jobs", {
+        headers: { token: companyToken },
+      });
+
+      if (data.success) {
+        setJobs(data.jobsData.reverse());
+        console.log(data.jobsData)
+      } else {
+        toast.error(data.message);
+      }
+    } catch (error) {
+      toast.error(error.message);
+    }
+  };
+
+  useEffect(() => {
+    if (companyToken) {
+      fetchCompanyJobs();
+    }
+  }, [companyToken]);
 
   return (
     <div className="container mx-auto p-4 max-w-5xl">
