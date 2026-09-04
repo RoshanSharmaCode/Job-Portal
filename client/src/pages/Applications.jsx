@@ -58,7 +58,7 @@ const Applications = () => {
   return (
     <>
       <Navbar />
-      <div className="container px-4 min-h[65vh] 2xl:px-20 mx-auto my-10">
+      <div className="container px-4 min-h-[65vh] 2xl:px-20 mx-auto my-10">
         <h2 className="text-xl font-semibold">Your Resume</h2>
         <div className="flex gap-2 mb-6 mt-3">
           {isEdit || (userData && userData.resume === "") ? (
@@ -122,21 +122,21 @@ const Applications = () => {
             </tr>
           </thead>
           <tbody>
-            {jobsApplied.map((job, index) => (
+            {userApplications.map((job, index) => (
               <tr key={index} className="hover:bg-gray-50 transition-colors">
                 <td className="py-3 px-4 flex items-center gap-2 border-b border-gray-300 text-sm font-medium text-gray-900">
                   <img
                     className="w-8 h-8 rounded-full object-cover"
-                    src={job.logo}
+                    src={job.companyId.image}
                     alt={`${job.company} logo`}
                   />
-                  {job.company}
+                  {job.companyId.company}
                 </td>
                 <td className="py-3 px-4 border-b border-gray-300 text-sm text-gray-600">
-                  {job.title}
+                  {job.jobId.title}
                 </td>
                 <td className="py-3 px-4 border-b border-gray-300 text-sm text-gray-600 max-sm:hidden">
-                  {job.location}
+                  {job.jobId.location}
                 </td>
                 <td className="py-3 px-4 border-b border-gray-300 text-sm text-gray-600 max-sm:hidden">
                   {moment(job.date).format("ll")}
