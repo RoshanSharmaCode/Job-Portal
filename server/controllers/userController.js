@@ -34,10 +34,10 @@ export const getUserData = async (req, res) => {
 
 // Apply for a job
 export const applyForJob = async (req, res) => {
-  const { jobId } = req.body;
-  const userId = req.auth.userId;
-
   try {
+    const { userId } = req.auth();
+    const { jobId } = req.body;
+
     const isAlreadyApplied = await JobApplication.find({ userId, jobId });
 
     if (isAlreadyApplied.length > 0) {
@@ -78,7 +78,7 @@ export const applyForJob = async (req, res) => {
 // Get user applied applications
 export const getUserJobApplications = async (req, res) => {
   try {
-    const userId = req.auth.userId;
+    const { userId } = req.auth();
 
     const applications = await JobApplication.find({ userId })
       .populate("companyId", "name email image")
@@ -107,16 +107,35 @@ export const getUserJobApplications = async (req, res) => {
 // update user profile (resume)
 export const updateUserResume = async (req, res) => {
   try {
-    const userId = req.auth.userId;
+    const { userId } = req.auth();
 
     const resumeFile = req.file;
 
+    if (!resumeFile) {
+      return res.status(400).json({
+        success: false,
+        message: "No resume file uploaded",
+      });
+    }
+
     const userData = await User.findById(userId);
 
-    if (resumeFile) {
-      const resumeUpload = await cloudinary.uploader.upload(resumeFile.path);
-      userData.resume = resumeUpload.secure_url;
+    if (!userData) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
     }
+
+    const resumeUpload = await cloudinary.uploader.unsigned_upload(
+      resumeFile.path,
+      "job_portal_test",
+      {
+        resource_type: "raw",
+      },
+    );
+
+    userData.resume = resumeUpload.secure_url;
 
     await userData.save();
 
@@ -125,6 +144,8 @@ export const updateUserResume = async (req, res) => {
       message: "Resume updated successfully",
     });
   } catch (error) {
+    console.error("UPDATE RESUME ERROR:", error);
+
     return res.status(500).json({
       success: false,
       message: error.message,
