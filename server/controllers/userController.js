@@ -127,11 +127,16 @@ export const updateUserResume = async (req, res) => {
       });
     }
 
+    const fileName = resumeFile.originalname
+      .replace(/\s+/g, "_")
+      .replace(/[^a-zA-Z0-9._-]/g, "");
+
     const resumeUpload = await cloudinary.uploader.unsigned_upload(
       resumeFile.path,
       "job_portal_test",
       {
         resource_type: "raw",
+        public_id: `resumes/${fileName}`,
       },
     );
 

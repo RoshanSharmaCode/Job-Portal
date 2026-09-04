@@ -1,93 +1,171 @@
-import React from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { assets, viewApplicationsPageData } from "../assets/assets";
+import { AppContext } from "../context/AppContext";
+import axios from "axios";
+import { toast } from "react-toastify";
+import Loading from "../components/Loading";
 
 const ViewApplications = () => {
-  return (
-    <div className="container mx-auto p-2">
-      <div>
-        <table className="w-full max-w-4xl bg-white border border-gray-200 max-sm:text-sm">
-          <thead>
-            <tr className="border-b border-gray-200">
-              <th className="py-2 px-4 text-left">#</th>
-              <th className="py-2 px-4 text-left">User name</th>
-              <th className="py-2 px-4 text-left max-sm:hidden">Job Title</th>
-              <th className="py-2 px-4 text-left max-sm:hidden">Location</th>
-              <th className="py-2 px-4 text-left">Resume</th>
-              <th className="py-2 px-4 text-left">Action</th>
-            </tr>
-          </thead>
+  const { backendUrl, companyToken } = useContext(AppContext);
 
-          <tbody>
-            {viewApplicationsPageData.map((applicant, index) => (
-              <tr key={index}>
-                <td className="py-2 px-4 border-b border-gray-200 text-center">
-                  {index + 1}
-                </td>
+  const [applicants, setApplicants] = useState(false);
 
-                <td className="py-2 px-4 border-b border-gray-200">
-                  <div className="flex items-center">
-                    <img
-                      className="w-10 h-10 rounded-full mr-3 max-sm:hidden"
-                      src={applicant.imgSrc}
-                      alt=""
-                    />
-                    <span>{applicant.name}</span>
-                  </div>
-                </td>
+  // Function to fetch company job applications data
+  const fetchCompanyJobApplications = async () => {
+    try {
+      const { data } = await axios.get(
+        backendUrl + "/api/company/applications",
+        { headers: { token: companyToken } },
+      );
 
-                <td className="py-2 px-4 border-b border-gray-200 max-sm:hidden">
-                  {applicant.jobTitle}
-                </td>
+      if (data.success) {
+        setApplicants(data.applications.reverse());
+      } else {
+        toast.error(data.message);
+      }
+    } catch (error) {
+      toast.error(error.message);
+    }
+  };
 
-                <td className="py-2 px-4 border-b border-gray-200 max-sm:hidden">
-                  {applicant.location}
-                </td>
+  // Function to update job application status
+  const changeJobApplicationStatus = async (id, status) => {
+    try {
+      const { data } = await axios.post(
+        backendUrl + "/api/company/change-status",
+        { id, status },
+        { headers: { token: companyToken } },
+      );
 
-                <td className="py-2 px-4 border-b border-gray-200">
-                  <a
-                    href=""
-                    target="_blank"
-                    className="bg-blue-50 text-blue-400 py-1 px-2 rounded inline-flex gap-2 items-center"
-                  >
-                    Resume
-                    <img src={assets.resume_download_icon} alt="" />
-                  </a>
-                </td>
+      if (data.success) {
+        fetchCompanyJobApplications();
+      } else {
+        toast.error(data.message);
+      }
+    } catch (error) {
+      toast.error(error.message);
+    }
+  };
 
-                <td className="py-2 px-4 border-b border-gray-200">
-                  <div className="relative inline-block group">
-                    <button type="button" className="text-gray-500 px-2 py-1">
-                      ...
-                    </button>
+  useEffect(() => {
+    if (companyToken) {
+      fetchCompanyJobApplications();
+    }
+  }, [companyToken]);
 
-                    {/* Dropdown */}
-                    <div
-                      className="
+  return applicants ? (
+    applicants.length === 0 ? (
+      <div></div>
+    ) : (
+      <div className="container mx-auto p-2">
+        <div>
+          <table className="w-full max-w-4xl bg-white border border-gray-200 max-sm:text-sm">
+            <thead>
+              <tr className="border-b border-gray-200">
+                <th className="py-2 px-4 text-left">#</th>
+                <th className="py-2 px-4 text-left">User name</th>
+                <th className="py-2 px-4 text-left max-sm:hidden">Job Title</th>
+                <th className="py-2 px-4 text-left max-sm:hidden">Location</th>
+                <th className="py-2 px-4 text-left">Resume</th>
+                <th className="py-2 px-4 text-left">Action</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              {applicants
+                .filter((item) => item.jobId && item.userId)
+                .map((applicant, index) => (
+                  <tr key={index}>
+                    <td className="py-2 px-4 border-b border-gray-200 text-center">
+                      {index + 1}
+                    </td>
+
+                    <td className="py-2 px-4 border-b border-gray-200 items-center">
+                      <div className="flex items-center">
+                        <img
+                          className="w-10 h-10 rounded-full mr-3 max-sm:hidden"
+                          src={applicant.userId.image}
+                          alt=""
+                        />
+                        <span>{applicant.userId.name}</span>
+                      </div>
+                    </td>
+
+                    <td className="py-2 px-4 border-b border-gray-200 max-sm:hidden">
+                      {applicant.jobId.title}
+                    </td>
+
+                    <td className="py-2 px-4 border-b border-gray-200 max-sm:hidden">
+                      {applicant.jobId.location}
+                    </td>
+
+                    <td className="py-2 px-4 border-b border-gray-200">
+                      <a
+                        href={applicant.userId.resume}
+                        target="_blank"
+                        className="bg-blue-50 text-blue-400 py-1 px-2 rounded inline-flex gap-2 items-center"
+                      >
+                        Resume
+                        <img src={assets.resume_download_icon} alt="" />
+                      </a>
+                    </td>
+
+                    <td className="py-2 px-4 border-b border-gray-200">
+                      {applicant.status === "Pending" ? (
+                        <div className="relative inline-block group">
+                          <button
+                            type="button"
+                            className="text-gray-500 px-2 py-1"
+                          >
+                            ...
+                          </button>
+
+                          {/* Dropdown */}
+                          <div
+                            className="
                       hidden absolute right-0 top-full w-32 bg-white border border-gray-200 rounded shadow-lg z-50 group-hover:block
                       "
-                    >
-                      <button
-                        type="button"
-                        className="block w-full text-left px-4 py-2 text-blue-500 hover:bg-gray-100"
-                      >
-                        Accept
-                      </button>
+                          >
+                            <button
+                              onClick={() =>
+                                changeJobApplicationStatus(
+                                  applicant._id,
+                                  "Accepted",
+                                )
+                              }
+                              type="button"
+                              className="block w-full text-left px-4 py-2 text-blue-500 hover:bg-gray-100 cursor-pointer"
+                            >
+                              Accept
+                            </button>
 
-                      <button
-                        type="button"
-                        className="block w-full text-left px-4 py-2 text-red-500 hover:bg-gray-100"
-                      >
-                        Reject
-                      </button>
-                    </div>
-                  </div>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+                            <button
+                              onClick={() =>
+                                changeJobApplicationStatus(
+                                  applicant._id,
+                                  "Rejected",
+                                )
+                              }
+                              type="button"
+                              className="block w-full text-left px-4 py-2 text-red-500 hover:bg-gray-100 cursor-pointer"
+                            >
+                              Reject
+                            </button>
+                          </div>
+                        </div>
+                      ) : (
+                        <div>{applicant.status}</div>
+                      )}
+                    </td>
+                  </tr>
+                ))}
+            </tbody>
+          </table>
+        </div>
       </div>
-    </div>
+    )
+  ) : (
+    <Loading />
   );
 };
 
