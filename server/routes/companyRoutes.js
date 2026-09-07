@@ -1,6 +1,6 @@
 import express from "express";
 import upload from "../config/multer.js";
-import { protectCompnay } from "../middlewares/authMIddleware.js";
+import { protectCompnay } from "../middlewares/authMiddleware.js";
 
 import {
   registerCompany,
