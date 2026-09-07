@@ -9,6 +9,7 @@ const ViewApplications = () => {
   const { backendUrl, companyToken } = useContext(AppContext);
 
   const [applicants, setApplicants] = useState(false);
+  const [openDropdown, setOpenDropdown] = useState(null);
 
   // Function to fetch company job applications data
   const fetchCompanyJobApplications = async () => {
@@ -113,7 +114,7 @@ const ViewApplications = () => {
                     </td>
 
                     <td className="py-2 px-4 border-b border-gray-200">
-                      {applicant.status === "Pending" ? (
+                      {applicant.status === "pending" ? (
                         <div className="relative inline-block group">
                           <button
                             type="button"
