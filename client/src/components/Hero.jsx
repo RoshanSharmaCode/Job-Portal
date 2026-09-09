@@ -48,7 +48,7 @@ const Hero = () => {
           </div>
           <button
             onClick={onSearch}
-            className="bg-blue-600 px-6 py-2 rounded text-white m-1"
+            className="bg-blue-600 px-6 py-2 rounded text-white m-1 cursor-pointer"
           >
             Search
           </button>
