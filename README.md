@@ -10,8 +10,6 @@ The application includes authentication, resume and image uploads, rich-text job
 
 🔗 **Live Application:** https://job-portal-client-self-chi.vercel.app
 
-🔗 **GitHub Repository:** https://github.com/RoshanSharmaCode/Job-Portal.git
-
 ---
 
 ## 📌 Features
