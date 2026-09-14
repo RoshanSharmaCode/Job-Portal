@@ -824,15 +824,4 @@ npm run dev
 
 ---
 
-# 👨‍💻 Author
-
-**Roshan Sharma**
-
-Full-Stack / MERN Stack Developer
-
-* GitHub: [RoshanSharmaCode](https://github.com/RoshanSharmaCode)
-* LinkedIn: [Roshan Sharma](https://www.linkedin.com/in/roshansharma9379/)
-
----
-
 # ⭐ If you like this project
