@@ -1,6 +1,6 @@
 # 💼 Full-Stack Job Portal
 
-A full-stack Job Portal application built using the **MERN stack** that connects job seekers with recruiters. Users can browse and apply for jobs, while companies can create job listings, manage applications, and update application statuses.
+A full-stack Job Portal application built using the **MERN stack** that connects job seekers with recruiters. Users can browse and apply for jobs, while companies can create job listings, manage applications, and update application statuses. 
 
 The application includes authentication, resume and image uploads, rich-text job descriptions, error monitoring, and cloud deployment.
 
